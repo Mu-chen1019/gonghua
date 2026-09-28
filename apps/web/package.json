@@ -1,0 +1,38 @@
+{
+    "name": "@gonghua/web",
+    "version": "0.1.0",
+    "private": true,
+    "type": "module",
+    "scripts": {
+        "dev": "vite --host 0.0.0.0 --port 5173",
+        "build": "tsc -p tsconfig.json --noEmit && vite build",
+        "preview": "vite preview --host 0.0.0.0",
+        "typecheck": "tsc -p tsconfig.json --noEmit",
+        "test": "vitest run --passWithNoTests",
+        "lint": "eslint src --ext .ts,.tsx"
+    },
+    "dependencies": {
+        "@dnd-kit/core": "^6.3.1",
+        "@dnd-kit/sortable": "^10.0.0",
+        "@gonghua/contracts": "workspace:*",
+        "@tanstack/react-query": "latest",
+        "@vitejs/plugin-react": "latest",
+        "framer-motion": "latest",
+        "lucide-react": "latest",
+        "react": "latest",
+        "react-dom": "latest",
+        "react-router-dom": "latest",
+        "zustand": "latest"
+    },
+    "devDependencies": {
+        "@tailwindcss/postcss": "^4.3.3",
+        "@types/react": "^19.2.18",
+        "@types/react-dom": "^19.2.5",
+        "autoprefixer": "latest",
+        "postcss": "latest",
+        "tailwindcss": "latest",
+        "typescript": "^5.9.3",
+        "vite": "latest",
+        "vitest": "latest"
+    }
+}

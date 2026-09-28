@@ -1,0 +1,13 @@
+{
+    "extends": "../../tsconfig.base.json",
+    "compilerOptions": {
+        "rootDir": "../..",
+        "outDir": "dist",
+        "sourceMap": true
+    },
+    "include": [
+        "src",
+        "../../packages/contracts/src",
+        "../../packages/game-core/src"
+    ]
+}

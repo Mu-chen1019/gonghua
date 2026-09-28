@@ -1,0 +1,326 @@
+// 攻花后端 Prisma Schema。
+// 当前覆盖用户、配置、房间、对局、动作日志、快照、结果和统计等后端基础数据表。
+// 运行中完整牌面状态仍由服务端内存仓库承载，数据库快照用于恢复兜底。
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+/// 用户主表，保存玩家账号的基础展示信息和账号状态。
+model User {
+  /// 用户唯一标识，默认由数据库生成 UUID。
+  id           String   @id @default(uuid())
+  /// 登录账号，历史本地用户和机器人用户允许为空。
+  username     String?  @unique
+  /// 登录密码摘要，只能由服务端写入，禁止向前端返回。
+  passwordHash String?
+  /// 用户昵称，用于个人页、房间和对局内展示。
+  nickname     String
+  /// 用户头像地址，未配置时由前端显示默认头像。
+  avatarUrl    String?
+  /// 用户账号状态，当前先使用字符串保留后续状态枚举扩展空间。
+  status       String   @default("ACTIVE")
+  /// 用户记录创建时间，由数据库写入。
+  createdAt    DateTime @default(now())
+  /// 用户记录更新时间，每次更新记录时由 Prisma 自动刷新。
+  updatedAt    DateTime @updatedAt
+
+  /// 用户个人配置，当前用于保存手牌排序、机器人默认等级等偏好。
+  setting     UserSetting?
+  /// 用户登录会话列表。
+  sessions    Session[]
+  /// 用户参与过的对局关系，当前用于记录座位、玩家类型和最终名次。
+  games       GamePlayer[]
+  /// 用户拥有的房间列表，后续联机房间阶段使用。
+  ownedRooms  Room[]       @relation("RoomOwner")
+  /// 用户加入过的房间成员关系。
+  roomPlayers RoomPlayer[]
+  /// 用户作为赢家的对局结果列表。
+  wonResults  GameResult[] @relation("GameResultWinner")
+  /// 用户长期战绩统计。
+  stat        PlayerStat?
+}
+
+/// 用户会话表，保存登录令牌摘要和过期时间。
+model Session {
+  /// 会话唯一标识，默认由数据库生成 UUID。
+  id        String   @id @default(uuid())
+  /// 用户唯一标识。
+  userId    String
+  /// 会话令牌摘要，明文令牌只在登录响应中返回一次。
+  tokenHash String   @unique
+  /// 会话过期时间。
+  expiresAt DateTime
+  /// 会话创建时间，由数据库写入。
+  createdAt DateTime @default(now())
+
+  /// 会话归属用户，删除用户时同步删除会话。
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([expiresAt])
+}
+
+/// 对局主表，保存一局游戏的基础生命周期信息，不存完整运行中牌面状态。
+model Game {
+  /// 对局唯一标识，由后端创建对局时生成并写入。
+  id           String    @id
+  /// 房间标识，当前房间体系未接入时允许为空。
+  roomId       String?
+  /// 对局模式，当前使用 NORMAL 或 HUMAN_VS_BOTS 字符串。
+  mode         String    @default("normal")
+  /// 对局状态，用于区分进行中、已结束等生命周期。
+  status       String
+  /// 当前对局阶段，对应游戏核心状态机中的阶段值。
+  currentPhase String
+  /// 对局状态版本号，后续用于并发控制、快照和动作幂等。
+  stateVersion Int       @default(0)
+  /// 对局结束原因，未结束时为空。
+  finishReason String?
+  /// 对局开始时间，默认取数据库当前时间。
+  startedAt    DateTime  @default(now())
+  /// 对局结束时间，未结束时为空。
+  finishedAt   DateTime?
+  /// 对局记录创建时间，由数据库写入。
+  createdAt    DateTime  @default(now())
+  /// 对局记录更新时间，每次更新记录时由 Prisma 自动刷新。
+  updatedAt    DateTime  @updatedAt
+
+  /// 对局玩家关系，记录该局内每个座位对应的用户和排名结果。
+  players   GamePlayer[]
+  /// 对局所属房间，当前单机对局允许为空。
+  room      Room?          @relation(fields: [roomId], references: [id])
+  /// 对局动作日志列表。
+  actions   GameAction[]
+  /// 对局快照列表。
+  snapshots GameSnapshot[]
+  /// 对局最终结果。
+  result    GameResult?
+}
+
+/// 用户个人配置表，保存可刷新保留的本地偏好，不承载游戏规则判断。
+model UserSetting {
+  /// 配置唯一标识，默认由数据库生成 UUID。
+  id               String   @id @default(uuid())
+  /// 用户唯一标识，一名用户只允许拥有一条配置。
+  userId           String   @unique
+  /// 是否开启手牌自动排序，后续个人页可切换。
+  autoSortEnabled  Boolean  @default(false)
+  /// 默认机器人等级，当前仅保存配置值，暂不改变机器人策略。
+  botLevel         String   @default("NORMAL")
+  /// 是否开启对局音效，当前预留给后续画面优化阶段。
+  soundEnabled     Boolean  @default(true)
+  /// 是否开启动画效果，当前预留给后续画面优化阶段。
+  animationEnabled Boolean  @default(true)
+  /// 是否显示事件栏，当前预留给后续个人页配置。
+  showEventPanel   Boolean  @default(true)
+  /// 配置记录创建时间，由数据库写入。
+  createdAt        DateTime @default(now())
+  /// 配置记录更新时间，每次更新记录时由 Prisma 自动刷新。
+  updatedAt        DateTime @updatedAt
+
+  /// 配置归属用户，删除用户时同步删除配置。
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+/// 对局玩家关系表，保存一局游戏中的座位、玩家类型和最终排名。
+model GamePlayer {
+  /// 对局玩家关系唯一标识，默认由数据库生成 UUID。
+  id         String    @id @default(uuid())
+  /// 对局唯一标识，关联对局主表。
+  gameId     String
+  /// 用户唯一标识，当前单机阶段真人和机器人都写入用户主表。
+  userId     String
+  /// 对局内座位序号，用于恢复玩家顺序和攻防关系展示。
+  seat       Int
+  /// 玩家类型，当前使用 `human` 或 `bot` 字符串。
+  playerType String
+  /// 最终名次，玩家尚未完成时为空。
+  finalRank  Int?
+  /// 玩家出完手牌并产生名次的时间，未完成时为空。
+  finishedAt DateTime?
+  /// 对局玩家关系创建时间，由数据库写入。
+  createdAt  DateTime  @default(now())
+  /// 对局玩家关系更新时间，每次更新记录时由 Prisma 自动刷新。
+  updatedAt  DateTime  @updatedAt
+
+  /// 关系所属对局，删除对局时同步删除玩家关系。
+  game Game @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  /// 关系所属用户，删除用户时同步删除该用户的对局关系。
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([gameId, seat])
+  @@unique([gameId, userId])
+  @@index([userId])
+}
+
+/// 房间主表，保存联机房间的生命周期和基础配置。
+model Room {
+  /// 房间唯一标识，默认由数据库生成 UUID。
+  id             String    @id @default(uuid())
+  /// 房间号，用于玩家加入房间。
+  roomCode       String    @unique
+  /// 房主用户标识。
+  ownerUserId    String
+  /// 房间状态，当前使用字符串保留后续枚举扩展空间。
+  status         String
+  /// 目标玩家数量。
+  playerCount    Int
+  /// 是否允许机器人补位。
+  botFillEnabled Boolean   @default(true)
+  /// 房间创建时间，由数据库写入。
+  createdAt      DateTime  @default(now())
+  /// 房间更新时间，每次更新记录时由 Prisma 自动刷新。
+  updatedAt      DateTime  @updatedAt
+  /// 房间关闭时间，未关闭时为空。
+  closedAt       DateTime?
+
+  /// 房主用户关系。
+  owner   User         @relation("RoomOwner", fields: [ownerUserId], references: [id], onDelete: Cascade)
+  /// 房间成员列表。
+  players RoomPlayer[]
+  /// 房间内创建的对局列表。
+  games   Game[]
+
+  @@index([ownerUserId])
+}
+
+/// 房间玩家关系表，保存用户在房间内的座位、准备和在线状态。
+model RoomPlayer {
+  /// 房间成员关系唯一标识，默认由数据库生成 UUID。
+  id           String    @id @default(uuid())
+  /// 房间唯一标识。
+  roomId       String
+  /// 用户唯一标识。
+  userId       String
+  /// 房间内座位序号。
+  seat         Int
+  /// 玩家类型，当前使用 `human` 或 `bot` 字符串。
+  playerType   String
+  /// 是否已经准备。
+  ready        Boolean   @default(false)
+  /// 在线状态，当前使用字符串保留后续枚举扩展空间。
+  onlineStatus String    @default("ONLINE")
+  /// 加入房间时间。
+  joinedAt     DateTime  @default(now())
+  /// 离开房间时间，仍在房间时为空。
+  leftAt       DateTime?
+
+  /// 所属房间。
+  room Room @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  /// 所属用户。
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([roomId, seat])
+  @@unique([roomId, userId])
+  @@index([userId])
+}
+
+/// 对局动作日志表，保存玩家、机器人和系统动作的结构化执行结果。
+model GameAction {
+  /// 动作日志唯一标识，默认由数据库生成 UUID。
+  id             String   @id @default(uuid())
+  /// 对局唯一标识。
+  gameId         String
+  /// 客户端动作幂等标识，正式联机阶段启用。
+  clientActionId String?
+  /// 玩家标识，可为空表示系统动作。
+  playerId       String?
+  /// 座位号，系统动作或无法定位座位时为空。
+  seat           Int?
+  /// 动作来源，当前使用 `human`、`bot` 或 `system`。
+  actorType      String
+  /// 动作类型。
+  actionType     String
+  /// 动作参数 JSON。
+  payloadJson    Json
+  /// 动作前版本。
+  beforeVersion  Int
+  /// 动作后版本，失败动作可为空。
+  afterVersion   Int?
+  /// 动作是否成功。
+  success        Boolean
+  /// 失败错误码，成功时为空。
+  errorCode      String?
+  /// 失败中文说明，成功时为空。
+  errorMessage   String?
+  /// 动作产生的事件 JSON。
+  eventJson      Json?
+  /// 动作创建时间，由数据库写入。
+  createdAt      DateTime @default(now())
+
+  /// 日志所属对局。
+  game Game @relation(fields: [gameId], references: [id], onDelete: Cascade)
+
+  @@unique([gameId, clientActionId])
+  @@index([gameId, createdAt])
+  @@index([playerId])
+}
+
+/// 对局快照表，保存完整 GameState JSON，用于服务重启后恢复。
+model GameSnapshot {
+  /// 快照唯一标识，默认由数据库生成 UUID。
+  id           String   @id @default(uuid())
+  /// 对局唯一标识。
+  gameId       String
+  /// 状态版本号。
+  stateVersion Int
+  /// 完整 GameState JSON。
+  stateJson    Json
+  /// 快照创建时间，由数据库写入。
+  createdAt    DateTime @default(now())
+
+  /// 快照所属对局。
+  game Game @relation(fields: [gameId], references: [id], onDelete: Cascade)
+
+  @@unique([gameId, stateVersion])
+  @@index([gameId, createdAt])
+}
+
+/// 对局结果表，保存一局游戏结束后的结果摘要。
+model GameResult {
+  /// 结果唯一标识，默认由数据库生成 UUID。
+  id           String   @id @default(uuid())
+  /// 对局唯一标识，一局只允许一条结果。
+  gameId       String   @unique
+  /// 第一名用户标识，无法确认时为空。
+  winnerUserId String?
+  /// 完整排名 JSON。
+  rankingsJson Json
+  /// 计分 JSON，预留后续计分规则。
+  scoreJson    Json?
+  /// 结果创建时间，由数据库写入。
+  createdAt    DateTime @default(now())
+
+  /// 结果所属对局。
+  game   Game  @relation(fields: [gameId], references: [id], onDelete: Cascade)
+  /// 第一名用户关系。
+  winner User? @relation("GameResultWinner", fields: [winnerUserId], references: [id], onDelete: SetNull)
+
+  @@index([winnerUserId])
+}
+
+/// 玩家统计表，保存用户长期对局数量、胜场和平均名次。
+model PlayerStat {
+  /// 统计唯一标识，默认由数据库生成 UUID。
+  id          String    @id @default(uuid())
+  /// 用户唯一标识，一名用户只允许一条统计记录。
+  userId      String    @unique
+  /// 总对局数。
+  totalGames  Int       @default(0)
+  /// 第一名次数。
+  winGames    Int       @default(0)
+  /// 平均名次。
+  averageRank Float     @default(0)
+  /// 最近完成对局时间。
+  lastGameAt  DateTime?
+  /// 统计更新时间，每次更新记录时由 Prisma 自动刷新。
+  updatedAt   DateTime  @updatedAt
+
+  /// 统计所属用户。
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}

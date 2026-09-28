@@ -1,0 +1,1011 @@
+/* 全局样式入口，集中维护 H5 页面基础样式和当前对局布局样式。 */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* 应用基础主题变量。 */
+:root {
+    color-scheme: dark;
+    font-family: Inter, "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+
+/* 全局盒模型，避免 100% 宽度叠加 padding 后撑破布局容器。 */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+/* 页面默认背景，保证路由切换时不出现白底闪烁。 */
+body {
+    margin: 0;
+    background: #10151f;
+}
+
+/* 按钮继承页面字体，避免浏览器默认字体破坏卡牌界面一致性。 */
+button {
+    font: inherit;
+}
+
+/* 开始页整体布局。 */
+.start-page {
+    min-height: calc(100vh - 56px);
+    display: grid;
+    place-items: center;
+    padding: 24px;
+    background:
+        radial-gradient(
+            circle at 50% 10%,
+            rgba(39, 174, 96, 0.22),
+            transparent 36%
+        ),
+        #10151f;
+}
+
+/* 开始页内容区域。 */
+.start-panel {
+    width: min(680px, 100%);
+    display: grid;
+    gap: 18px;
+}
+
+/* 开始页辅助文案。 */
+.start-subtitle {
+    margin: 10px 0 0;
+    color: #b8c4d4;
+}
+
+/* 首页分组区域，不使用嵌套卡片，保持入口清晰。 */
+.start-section {
+    display: grid;
+    gap: 12px;
+}
+
+/* 分组标题行。 */
+.section-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #f8fafc;
+}
+
+/* 分组标题文本。 */
+.section-title h2 {
+    margin: 0;
+    font-size: 18px;
+}
+
+/* 弱提示文本。 */
+.muted-text {
+    margin: 0;
+    color: #94a3b8;
+    font-size: 14px;
+}
+
+/* 最近对局列表。 */
+.record-list {
+    display: grid;
+    gap: 8px;
+}
+
+/* 最近对局项。 */
+.record-item {
+    width: 100%;
+    min-height: 52px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.06);
+    color: #e2e8f0;
+    padding: 10px 12px;
+    cursor: pointer;
+}
+
+/* 最近对局文本区。 */
+.record-item span {
+    min-width: 0;
+    display: grid;
+    gap: 3px;
+    text-align: left;
+}
+
+/* 最近对局版本文本。 */
+.record-item small {
+    color: #94a3b8;
+}
+
+/* 开始页主标题。 */
+.start-panel h1 {
+    margin: 0;
+    font-size: clamp(44px, 9vw, 88px);
+    line-height: 1;
+    letter-spacing: 0;
+}
+
+/* 主要动作按钮。 */
+.primary-button {
+    width: fit-content;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    border: 0;
+    border-radius: 8px;
+    background: #22c55e;
+    color: #052e16;
+    padding: 12px 18px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+/* 普通内容页基础布局。 */
+.content-page {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 48px 20px;
+}
+
+/* 普通内容页标题。 */
+.content-page h1 {
+    margin: 0 0 12px;
+    font-size: 32px;
+}
+
+/* 内容页标题说明区域。 */
+.page-heading {
+    display: grid;
+    gap: 4px;
+    margin-bottom: 22px;
+}
+
+/* 内容页说明文字。 */
+.page-heading p {
+    margin: 0;
+    color: #b8c4d4;
+}
+
+/* 大厅页面整体布局。 */
+.lobby-page {
+    display: grid;
+    gap: 18px;
+}
+
+/* 大厅操作区。 */
+.lobby-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 12px;
+}
+
+/* 大厅入口分区，分别承载人机、创建房间和加入房间。 */
+.lobby-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 14px;
+}
+
+/* 大厅单个功能区。 */
+.lobby-section {
+    display: grid;
+    align-content: start;
+    gap: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    background: rgba(15, 23, 42, 0.72);
+    padding: 16px;
+}
+
+/* 大厅功能区标题。 */
+.lobby-section-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #dbeafe;
+}
+
+/* 大厅功能区标题文本。 */
+.lobby-section-title h2 {
+    margin: 0;
+    font-size: 16px;
+}
+
+/* 次要动作按钮。 */
+.secondary-button {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.08);
+    color: #e2e8f0;
+    padding: 10px 14px;
+    cursor: pointer;
+}
+
+/* 禁用按钮状态。 */
+.primary-button:disabled,
+.secondary-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.58;
+}
+
+/* 表单输入行。 */
+.form-field {
+    min-width: min(260px, 100%);
+    display: grid;
+    gap: 6px;
+    color: #cbd5e1;
+    font-size: 13px;
+}
+
+/* 输入控件基础样式。 */
+.form-field input,
+.form-field select {
+    height: 42px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 8px;
+    background: rgba(15, 23, 42, 0.84);
+    color: #f8fafc;
+    padding: 0 12px;
+    outline: none;
+}
+
+/* 紧凑表单字段，适合人数选择这类短控件。 */
+.compact-field {
+    min-width: 120px;
+}
+
+/* 登录注册页面布局。 */
+.auth-page {
+    display: grid;
+    justify-items: center;
+}
+
+/* 登录注册内容区域。 */
+.auth-panel {
+    width: min(420px, 100%);
+    display: grid;
+    gap: 16px;
+}
+
+/* 登录注册切换控件。 */
+.segmented-control {
+    display: inline-flex;
+    width: fit-content;
+    gap: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.06);
+    padding: 4px;
+}
+
+/* 登录注册切换按钮。 */
+.segmented-control button {
+    min-height: 36px;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: #cbd5e1;
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+/* 当前登录注册模式。 */
+.segmented-control .active {
+    background: rgba(34, 197, 94, 0.2);
+    color: #bbf7d0;
+}
+
+/* 登录注册表单。 */
+.auth-form {
+    display: grid;
+    gap: 12px;
+}
+
+/* 个人页信息区域。 */
+.profile-page {
+    display: grid;
+    gap: 16px;
+}
+
+/* 个人信息展示面板。 */
+.profile-panel {
+    display: grid;
+    gap: 8px;
+    color: #dbeafe;
+}
+
+/* 复选框行。 */
+.checkbox-field {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: #cbd5e1;
+}
+
+/* 空状态面板。 */
+.empty-panel {
+    min-height: 120px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    border: 1px dashed rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    color: #94a3b8;
+}
+
+/* 房间状态区域。 */
+.room-panel {
+    display: grid;
+    gap: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    background: rgba(15, 23, 42, 0.72);
+    padding: 16px;
+}
+
+/* 房间号展示区，方便复制给其他玩家。 */
+.room-code-box {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    border: 1px solid rgba(34, 197, 94, 0.22);
+    border-radius: 8px;
+    background: rgba(22, 101, 52, 0.14);
+    padding: 14px;
+}
+
+/* 房间号文本组。 */
+.room-code-box div {
+    display: grid;
+    gap: 4px;
+}
+
+/* 房间号标签。 */
+.room-code-box span {
+    color: #a7f3d0;
+    font-size: 13px;
+}
+
+/* 房间号值。 */
+.room-code-box strong {
+    color: #f8fafc;
+    font-size: 26px;
+    letter-spacing: 0;
+}
+
+/* 房间摘要信息。 */
+.room-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    color: #dbeafe;
+    font-size: 14px;
+}
+
+/* 房间摘要标签。 */
+.room-summary span {
+    border: 1px solid rgba(147, 197, 253, 0.2);
+    border-radius: 8px;
+    background: rgba(30, 64, 175, 0.18);
+    padding: 8px 10px;
+}
+
+/* 房间成员列表。 */
+.room-members {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 10px;
+}
+
+/* 房间成员项。 */
+.room-member {
+    min-height: 74px;
+    display: grid;
+    gap: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.06);
+    padding: 12px;
+}
+
+/* 房间成员辅助信息。 */
+.room-member span {
+    color: #94a3b8;
+    font-size: 13px;
+}
+
+/* 对局页主布局，按状态条、玩家区、桌面区、事件、手牌和操作区排列。 */
+.game-page {
+    min-height: 100vh;
+    display: grid;
+    grid-template-rows: auto auto 1fr auto auto;
+    gap: 12px;
+    padding: 12px 16px 10px;
+    background: linear-gradient(180deg, #182231 0%, #10151f 100%);
+    overflow: hidden;
+}
+
+/* 非阻塞提醒浮层，不占用牌桌和手牌之间的布局空间。 */
+.notice-toast {
+    position: fixed;
+    top: 72px;
+    right: 18px;
+    z-index: 40;
+    max-width: min(360px, calc(100vw - 36px));
+    border: 1px solid rgba(251, 113, 133, 0.44);
+    border-radius: 8px;
+    background: rgba(127, 29, 29, 0.94);
+    color: #ffe4e6;
+    padding: 10px 12px;
+    font-size: 14px;
+    box-shadow: 0 14px 36px rgba(0, 0, 0, 0.32);
+}
+
+/* 顶部状态和事件提示共用布局。 */
+.game-topbar,
+.event-line,
+.error-line,
+.event-panel {
+    max-width: none;
+    width: 100%;
+    margin: 0 auto;
+    color: #d5dee9;
+}
+
+/* 顶部状态和单行提示布局。 */
+.game-topbar,
+.event-line,
+.error-line {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
+
+/* 顶部状态区左右分栏，右侧承载人机局生命周期操作。 */
+.game-topbar {
+    justify-content: space-between;
+}
+
+/* 对局状态标签列表，空间不足时允许自然换行。 */
+.game-status-list {
+    min-width: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+}
+
+/* 人机局退出和重开按钮区域，固定在顶部右侧便于快速操作。 */
+.game-lifecycle-actions {
+    display: inline-flex;
+    flex: 0 0 auto;
+    gap: 8px;
+    align-items: center;
+}
+
+/* 顶部状态和事件提示共用视觉样式。 */
+.game-status-list span,
+.event-line,
+.error-line {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.06);
+    padding: 8px 10px;
+}
+
+/* 错误提示强调样式。 */
+.error-line {
+    color: #fecdd3;
+}
+
+/* 牌桌和侧边事件区布局。 */
+.game-board-layout {
+    max-width: none;
+    width: 100%;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 220px;
+    gap: 14px;
+    align-items: stretch;
+    min-height: 0;
+}
+
+/* 对局事件流水面板。 */
+.event-panel {
+    width: auto;
+    height: 220px;
+    margin-left: 0;
+    overflow-y: auto;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 10px 12px;
+    scrollbar-gutter: stable;
+}
+
+/* 已产生名次列表，复用事件侧栏空间展示全局结算进度。 */
+.ranking-list {
+    display: grid;
+    gap: 4px;
+    margin-bottom: 10px;
+    color: #fde68a;
+    font-size: 13px;
+}
+
+/* 事件流水标题。 */
+.event-panel p {
+    margin: 0 0 6px;
+    color: #f8fafc;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+/* 事件流水列表，不使用编号或顺序符号。 */
+.event-list {
+    margin: 0;
+    padding: 0;
+    color: #cbd5e1;
+    font-size: 13px;
+}
+
+/* 单条事件内容。 */
+.event-item {
+    line-height: 1.45;
+}
+
+/* 相邻事件之间留出轻量间距。 */
+.event-item + .event-item {
+    margin-top: 6px;
+}
+
+/* 玩家摘要网格。 */
+.players-grid {
+    max-width: none;
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: nowrap;
+    gap: 8px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 0 2px 6px;
+}
+
+/* 单个玩家摘要面板。 */
+.player-panel {
+    position: relative;
+    width: 184px;
+    min-height: 80px;
+    flex: 0 0 184px;
+    display: block;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.06);
+    padding: 8px 8px 7px;
+    overflow: hidden;
+}
+
+/* 玩家面板主体，机器人手牌需要在基础信息下方完整展示。 */
+.player-panel-main {
+    min-width: 0;
+    display: grid;
+    gap: 6px;
+    padding-right: 34px;
+}
+
+/* 玩家座位、昵称和元信息一行展示，长昵称必须截断，不能挤压标签。 */
+.player-panel-identity {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+}
+
+/* 玩家座位徽标缩小后仍保持稳定尺寸。 */
+.player-seat-badge {
+    width: 26px;
+    height: 26px;
+    flex: 0 0 26px;
+    display: grid;
+    place-items: center;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.15);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+/* 玩家文本区域允许截断，避免 UUID 或长昵称撑破卡片。 */
+.player-panel-text {
+    min-width: 0;
+}
+
+/* 玩家昵称。 */
+.player-name {
+    max-width: 100%;
+    margin: 0;
+    overflow: hidden;
+    color: #f8fafc;
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.25;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* 玩家角色和手牌数量。 */
+.player-meta {
+    margin: 3px 0 0;
+    color: #cbd5e1;
+    font-size: 12px;
+    line-height: 1.25;
+}
+
+/* 当前阶段可操作玩家提示样式。 */
+.player-panel-actionable {
+    border-color: rgba(56, 189, 248, 0.72);
+    box-shadow: 0 0 0 1px rgba(56, 189, 248, 0.22);
+}
+
+/* 已完成排名玩家的座位样式。 */
+.player-panel-finished {
+    border-color: rgba(250, 204, 21, 0.36);
+    background: rgba(120, 113, 108, 0.24);
+}
+
+/* 玩家状态标签容器。 */
+.player-panel-tags {
+    position: absolute;
+    top: 7px;
+    right: 7px;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+    align-items: flex-end;
+    gap: 4px;
+    max-width: 30px;
+}
+
+/* 机器人手牌列表，超出玩家面板时在自身区域内横向滚动。 */
+.bot-hand-card-list {
+    max-width: 100%;
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 2px 0 6px;
+    scrollbar-gutter: stable;
+}
+
+/* 机器人手牌使用更小缩放和负间距，减少占用但保留可辨识牌面。 */
+.bot-hand-card {
+    width: 43px;
+    height: 43px;
+    flex: 0 0 43px;
+    transform: scale(0.6);
+    transform-origin: left top;
+}
+
+/* 相邻机器人手牌轻微压叠，超过容器宽度后由列表自身滚动查看。 */
+.bot-hand-card + .bot-hand-card {
+    margin-left: -16px;
+}
+
+/* 玩家可操作动作提示。 */
+.player-panel-action-hint {
+    border-radius: 6px;
+    background: rgba(56, 189, 248, 0.16);
+    color: #bae6fd;
+    padding: 3px 5px;
+    font-size: 11px;
+}
+
+/* 当前客户端玩家标签。 */
+.player-panel-self {
+    border-radius: 6px;
+    background: rgba(34, 197, 94, 0.18);
+    color: #bbf7d0;
+    padding: 3px 5px;
+    font-size: 11px;
+}
+
+/* 桌面攻守牌位区域。 */
+.table-area {
+    max-width: none;
+    width: 100%;
+    min-height: 280px;
+    height: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-content: center;
+    gap: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 8px;
+    background: linear-gradient(
+        135deg,
+        rgba(20, 83, 45, 0.58),
+        rgba(15, 23, 42, 0.88)
+    );
+    padding: 12px;
+    overflow: hidden;
+}
+
+/* 手牌拖到桌面区时的整体投放反馈。 */
+.table-area-over {
+    border-color: rgba(56, 189, 248, 0.72);
+    box-shadow: inset 0 0 0 2px rgba(56, 189, 248, 0.18);
+}
+
+/* 空桌面提示。 */
+.table-empty {
+    color: #cbd5e1;
+}
+
+/* 单组攻守牌位容器。 */
+.pair-slot {
+    width: 84px;
+    min-height: 196px;
+    display: grid;
+    justify-items: center;
+    align-content: start;
+    gap: 7px;
+    border: 1px dashed rgba(255, 255, 255, 0.22);
+    border-radius: 8px;
+    background: rgba(15, 23, 42, 0.36);
+    padding: 8px;
+    cursor: pointer;
+}
+
+/* 桌面牌位内部卡牌独立缩小，底部手牌仍保持原有尺寸。 */
+.pair-slot .card-view,
+.pair-slot .draggable-card-shell,
+.pair-slot .drag-overlay-card {
+    width: 62px;
+    height: 88px;
+    flex-basis: 62px;
+}
+
+/* 当前选中桌面牌位。 */
+.pair-slot-selected {
+    border-color: #38bdf8;
+    box-shadow: 0 0 0 2px rgba(56, 189, 248, 0.24);
+}
+
+/* 拖拽悬停到具体牌位时的投放反馈。 */
+.pair-slot-over {
+    border-color: #22c55e;
+    box-shadow: 0 0 0 2px rgba(34, 197, 94, 0.28);
+}
+
+/* 未放置守牌时的占位区域。 */
+.defense-placeholder {
+    display: grid;
+    place-items: center;
+    width: 62px;
+    height: 88px;
+    border-radius: 8px;
+    border: 1px dashed rgba(255, 255, 255, 0.18);
+    color: #cbd5e1;
+    font-size: 13px;
+}
+
+/* 当前玩家手牌区域，横向滚动保证移动端可操作。 */
+.hand-area {
+    max-width: none;
+    width: 100%;
+    min-height: 116px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 12px;
+    align-items: center;
+    padding: 12px 4px;
+}
+
+/* 手牌区工具栏，承载一键排序和自动排序配置入口。 */
+.hand-toolbar {
+    display: grid;
+    gap: 8px;
+    align-content: center;
+}
+
+/* 手牌区工具按钮和配置标签。 */
+.hand-toolbar button,
+.hand-toolbar label {
+    min-height: 34px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    border: 0;
+    border-radius: 8px;
+    background: rgba(226, 232, 240, 0.92);
+    color: #0f172a;
+    padding: 8px 10px;
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+    cursor: pointer;
+}
+
+/* 禁用的一键排序按钮。 */
+.hand-toolbar button:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+}
+
+/* 自动排序配置复选框。 */
+.hand-toolbar input {
+    width: 14px;
+    height: 14px;
+    margin: 0;
+}
+
+/* 手牌横向列表，支持拖动排序和横向滚动。 */
+.hand-card-list {
+    min-width: 0;
+    min-height: 128px;
+    display: flex;
+    gap: 8px;
+    align-items: flex-end;
+    overflow-x: auto;
+    padding: 14px 0 12px;
+}
+
+/* 单张卡牌基础样式。 */
+.card-view {
+    position: relative;
+    width: 74px;
+    flex: 0 0 74px;
+    height: 104px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    background: linear-gradient(180deg, #fff 0%, #e5edf7 100%);
+    color: #0f172a;
+    box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
+    cursor: pointer;
+}
+
+/* 卡牌点数固定在左上角，贴近真实扑克牌阅读方式。 */
+.card-view-rank {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    font-weight: 800;
+    line-height: 1;
+}
+
+/* 卡牌花色保持在原来的居中位置。 */
+.card-view-suit {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    font-weight: 700;
+}
+
+/* 拖拽卡牌外层，负责承接拖拽位移并保持卡牌固定尺寸。 */
+.draggable-card-shell {
+    width: 74px;
+    height: 104px;
+    flex: 0 0 74px;
+    display: grid;
+    place-items: center;
+    z-index: 5;
+}
+
+/* 拖拽浮层中的卡牌，跟随指针移动且不参与页面布局。 */
+.drag-overlay-card {
+    width: 74px;
+    height: 104px;
+    pointer-events: none;
+    filter: drop-shadow(0 18px 24px rgba(0, 0, 0, 0.36));
+}
+
+/* 桌面牌位中的紧凑卡牌样式。 */
+.card-view-compact {
+    width: 72px;
+    height: 72px;
+    min-height: 72px;
+}
+
+/* 当前选中卡牌样式。 */
+.card-view-selected {
+    border-color: #38bdf8;
+    box-shadow:
+        0 0 0 3px rgba(56, 189, 248, 0.4),
+        0 10px 28px rgba(0, 0, 0, 0.28);
+}
+
+/* 主牌标记。 */
+.card-view small {
+    position: absolute;
+    bottom: 7px;
+    color: #047857;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+/* 对局动作按钮区域。 */
+.action-panel {
+    max-width: none;
+    width: 100%;
+    margin: 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+/* 对局动作按钮基础样式。 */
+.action-panel button {
+    border: 0;
+    border-radius: 8px;
+    background: #e2e8f0;
+    color: #0f172a;
+    padding: 10px 14px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+/* 禁用动作按钮样式。 */
+.action-panel button:disabled {
+    cursor: not-allowed;
+    opacity: 0.45;
+}
+
+/* 小屏基础适配，先保证玩家区和桌面区不会横向溢出。 */
+@media (max-width: 760px) {
+    .players-grid {
+        flex-wrap: nowrap;
+    }
+
+    .game-page {
+        padding: 8px;
+        overflow: auto;
+    }
+
+    .table-area {
+        min-height: 220px;
+        padding: 8px;
+    }
+
+    .game-board-layout {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .event-panel {
+        height: 92px;
+    }
+
+    .player-panel {
+        min-height: 76px;
+        width: 168px;
+        flex-basis: 168px;
+    }
+
+    .hand-area {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 8px;
+    }
+
+    .hand-toolbar {
+        display: flex;
+        overflow-x: auto;
+    }
+}

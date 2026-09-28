@@ -1,0 +1,36 @@
+{
+    "name": "@gonghua/server",
+    "version": "0.1.0",
+    "private": true,
+    "type": "module",
+    "main": "dist/index.js",
+    "scripts": {
+        "dev": "tsx watch src/index.ts",
+        "build": "tsc -p tsconfig.json",
+        "start": "node dist/index.js",
+        "typecheck": "tsc -p tsconfig.json --noEmit",
+        "test": "vitest run --passWithNoTests",
+        "lint": "eslint src --ext .ts",
+        "db:health": "tsx src/db/checkHealth.ts",
+        "db:generate": "prisma generate --config prisma.config.ts",
+        "db:migrate": "prisma migrate dev --config prisma.config.ts",
+        "db:studio": "prisma studio --config prisma.config.ts --port 5555"
+    },
+    "dependencies": {
+        "@fastify/cors": "latest",
+        "@gonghua/contracts": "workspace:*",
+        "@gonghua/game-core": "workspace:*",
+        "@prisma/adapter-pg": "^7.10.0",
+        "@prisma/client": "^7.10.0",
+        "fastify": "latest",
+        "pg": "^8.23.0",
+        "zod": "latest"
+    },
+    "devDependencies": {
+        "@types/pg": "^8.23.1",
+        "prisma": "7.10.0",
+        "tsx": "latest",
+        "typescript": "^5.9.3",
+        "vitest": "latest"
+    }
+}
